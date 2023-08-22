@@ -1,7 +1,6 @@
-
-const { initConfig, CONFIG_KEY } = require('./src/config');
-const initServer = require('./src/server/initServer');
-const tasks = require('./src/tasks/');
+import { initConfig, CONFIG_KEY } from './src/config';
+import initServer from './src/server/initServer';
+import tasks from './src/tasks';
 
 /**
  * Initializes the plugin:
@@ -10,8 +9,7 @@ const tasks = require('./src/tasks/');
  * @param {Function} on - Method to register tasks
  * @param {Object} globalConfig - Object containing global Cypress config
  */
-function initPlugin(on, globalConfig = {
-}) {
+export const initPlugin = (on: Cypress.PluginEvents, globalConfig: Cypress.PluginConfigOptions) => {
   const config = initConfig(globalConfig.env[CONFIG_KEY]);
   initServer(config);
 
@@ -19,7 +17,7 @@ function initPlugin(on, globalConfig = {
   // That's why the config is stringified and parsed again in `src/utils/commands/getConfig.js#fixConfig`.
   globalConfig.env[CONFIG_KEY] = JSON.stringify(config);
 
-  on('before:browser:launch', (browser = {}, launchOptions) => {
+  on('before:browser:launch', (browser: any = {}, launchOptions: any = {}) => {
     const args = Array.isArray(launchOptions) ? launchOptions : launchOptions.args;
 
     if (browser.name === 'chrome') {
@@ -32,8 +30,4 @@ function initPlugin(on, globalConfig = {
   });
 
   on('task', tasks);
-}
-
-module.exports = {
-  initPlugin
 };
